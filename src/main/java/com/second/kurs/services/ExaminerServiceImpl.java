@@ -29,26 +29,38 @@ public class ExaminerServiceImpl implements ExaminerService {
             throw new ExceedAmountItemsException("Количество вопросов превышает количество записей в базе");
         Random random = new Random();
         Collection<Question> selectedQuestions = new HashSet<>();
-        Question item;
-        int javaCount;
-        int mathCount;
-        int i = 0;
-        do {
-            javaCount = random.nextInt(amount);
-            mathCount = amount - javaCount;
-        } while (!(javaCount <= javaQuestionService.getAll().size() && mathCount <= mathQuestionService.getAll().size()));
-        while (i < javaCount) {
-            item = javaQuestionService.getRandomQuestion();
-            if (!selectedQuestions.contains(item)) {
-                selectedQuestions.add(item);
-                i++;
-            }
-        }
-        while (i < amount) {
-            item = mathQuestionService.getRandomQuestion();
-            if (!selectedQuestions.contains(item)) {
-                selectedQuestions.add(item);
-                i++;
+
+//        Этот вариант не могу покрыть тестами с использованием моков т.к. тут надо использовать реальную коллекцию.
+//        По этому использую более упрощенный вариант. См.ниже
+
+//        Question item;
+//        int javaCount;
+//        int mathCount;
+//        int i = 0;
+//        do {
+//            javaCount = random.nextInt(amount);
+//            mathCount = amount - javaCount;
+//        } while (!(javaCount <= javaQuestionService.getAll().size() && mathCount <= mathQuestionService.getAll().size()));
+//        while (i < javaCount) {
+//            item = javaQuestionService.getRandomQuestion();
+//            if (!selectedQuestions.contains(item)) {
+//                selectedQuestions.add(item);
+//                i++;
+//            }
+//        }
+//        while (i < amount) {
+//            item = mathQuestionService.getRandomQuestion();
+//            if (!selectedQuestions.contains(item)) {
+//                selectedQuestions.add(item);
+//                i++;
+//            }
+//        }
+
+        while (selectedQuestions.size() < amount) {
+            if (random.nextBoolean()) {
+                selectedQuestions.add(javaQuestionService.getRandomQuestion());
+            } else {
+                selectedQuestions.add(mathQuestionService.getRandomQuestion());
             }
         }
         return selectedQuestions;
